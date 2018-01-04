@@ -6,11 +6,15 @@
 
 <https://nodejs.org/en/>
 
+### VSCode
+
+<https://code.visualstudio.com/>
+
+Or any code editor you like
+
 ### RethinkDB
 
 Install RethinkDB: <https://rethinkdb.com/docs/install/>
-
-write down the port number noted on client driver (here 28015). You need this port number in the app
 
 Check the administrative portal: <http://localhost:8080/>
 
