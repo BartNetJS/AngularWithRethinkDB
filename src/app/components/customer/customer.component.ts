@@ -10,7 +10,8 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
       <mat-form-field>
         <input matInput required placeholder="Customer name" type="text" [(ngModel)]="customer.name" name="first">
       </mat-form-field>
-      <button mat-button type="submit" [disabled]="!form.valid">Add</button>
+      <button mat-button type="submit">Add</button>
+      <!--[disabled]="!form.valid"-->
     </form>
   `,
   styles: []
