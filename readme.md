@@ -294,27 +294,53 @@ imports: [
 Replace code with
 
 ```typescript
-import { Customer} from '../../models/customer';
-import { Component, OnInit } from '@angular/core';
-import { CustomerService } from '../../services/customer.service';
+import { Component, OnInit } from "@angular/core";
+import { MatTableDataSource } from "@angular/material";
+import { CustomerService } from "../../services/customer.service";
+import { Customer, ICustomer } from "../../models/customer";
 
 @Component({
-  selector: 'app-customers',
+  selector: "app-customers",
   template: `
-    <div ngFor="customer in customers">
-      {{customer.name}}
-    </div>
+    <app-customer></app-customer>
+    <mat-table #table [dataSource]="dataSource">
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+    </ng-container>
+
+    <!-- remove Column -->
+    <ng-container matColumnDef="remove">
+      <mat-header-cell *matHeaderCellDef>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <button mat-button  (click)="remove(row)">Remove</button>
+      </mat-cell>
+    </ng-container>
+  
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    
+  </mat-table>
   `,
   styles: []
 })
 export class CustomersComponent implements OnInit {
-  private customers: Customer[];
-  constructor(private customerService: CustomerService) { }
+  public customers: Customer[] = [];
+  public dataSource: MatTableDataSource<Customer>;
+  public displayedColumns = ["name", "remove"];
+  constructor(private customerService: CustomerService) {}
 
   ngOnInit(): void {
-    this.customerService.getCollection().subscribe(customers=>{
+    this.customerService.getCollection().subscribe(customers => {
       this.customers = customers;
+      this.dataSource = new MatTableDataSource(this.customers);
     });
+  }
+  remove(customer: ICustomer): void {
+    this.customerService.removeObject(customer.id);
   }
 }
 
@@ -326,19 +352,61 @@ export class CustomersComponent implements OnInit {
 ng g component components/customer
 
 ```
+Replace the code
 
+```typescript
+import { Component, OnInit, Input } from "@angular/core";
+import { CustomerService } from "../../services/customer.service";
+import { ICustomer, Customer } from "../../models/customer";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 
+@Component({
+  selector: "app-customer",
+  template: `
+    <form #f="ngForm" (ngSubmit)="onSubmit()" name="form" >
+      <mat-form-field>
+        <input matInput required placeholder="Customer name" type="text" [(ngModel)]="customer.name" name="first">
+      </mat-form-field>
+      <button mat-button type="submit">Add</button>
+      <!--[disabled]="!form.valid"-->
+    </form>
+  `,
+  styles: []
+})
+export class CustomerComponent implements OnInit {
+  @Input() customer: ICustomer = new Customer();
+  form: FormGroup;
 
-## Create a node server to host the RethinkDB proxy
+  constructor(private customerService: CustomerService, private formBuilder: FormBuilder) {}
 
-side note: for simplicity, we create the node api in the same solution as the angular app
+  ngOnInit(): void {
+    this.form = this.formBuilder.group({
+      name: [null, [Validators.required]],
+    });
+  }
 
-```cli
-md server
-cd server
-npm i horizon -s
-npm i express
+  onSubmit(): void {
+    this.customerService.addObject(this.customer);
+  }
+}
+
 ```
 
-create a server.js file and copy the code below
+### Update app.component.ts
 
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  template: `
+    <h1>Customers</h1>
+    <app-customers></app-customers>
+  `,
+  styles: []
+})
+export class AppComponent {
+  title = "app";
+}
+
+```
