@@ -1,5 +1,19 @@
 # Angular 5 with RethinkDB
 
+This is a sample application to get up and running with [Angular](https://angular.io/) 5+ and [RethinkDB](https://github.com/rethinkdb/rethinkdb)
+The middle layer is using [Horizon](https://github.com/rethinkdb/horizon)
+
+At the time of writing, horizon.io is not online anymore. But the docs can be found at [RethinkDB git here](https://github.com/rethinkdb/horizon-docs) 
+
+An online version can be found [here](http://samuelhughes.com/rethinkdb/horizon-docs/docs/)
+
+You can clone this project, run it as is:
+git clone ....
+cd ....
+npm i
+npm run start
+
+
 ## Prerequisites
 
 ### Node and npm
@@ -27,8 +41,6 @@ The horizon server is the api where your angular app will talk to
 
 ```cli
 npm install -g horizon
-hz init 
-
 ```
 
 > hz init will initialize the horizon server. See the .hz map for settings
@@ -39,7 +51,6 @@ And start the horizon server
 
 ```cli
 hz serve --dev
-
 ```
 you should see the following:
 
@@ -50,8 +61,6 @@ _RethinkDB_
    _└── Drivers can connect to port 43533__
 _Starting Horizon..._
 _🌄 Horizon ready for connections_
-_
-
 ```
 Check the administrative portal: <http://localhost:43534/> (the port can be diferent, see your output)
 
@@ -64,10 +73,9 @@ Check the administrative portal: <http://localhost:43534/> (the port can be dife
 
 ```cli
 npm install -g @angular/cli
-
 ```
 
-## Scafold Angular APP
+## Scafold Angular App
 
 ```cli
 ng new RethinkNGDemoApp -minimal
@@ -75,17 +83,14 @@ ng new RethinkNGDemoApp -minimal
 cd RethinkNGDemoApp
 
 npm i rxjs -s
-
 npm i @horizon/client -s
-
 npm i angular2-uuid -s
 npm install @angular/material @angular/cdk -s
 npm install @angular/animations -s
 npm install concurrently --save-dev
-
 ```
 
-> If you see an error while `ng new` is scafolding the app (e.g. 'Package install failed, see above.'), then run `yarn install` in the root folder of your app again. If it still fail, try `npm i`
+> If you see an error while `ng new` is scafolding the app (e.g. 'Package install failed, see above.'), then run `yarn install` in the root folder of your app again. If it still fails, try `npm i`
 
 ### add a horizon config section to environment.ts
 
@@ -98,7 +103,6 @@ export const environment = {
     host: '127.0.0.1:8181',
   }
 };
-
 ```
 
 ### Add angular modules to the import section
@@ -121,7 +125,6 @@ imports: [
 
 ```typescript
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-
 ```
 
 #### Add the material design components to app.module.ts
@@ -143,7 +146,6 @@ imports: [
 
 ```cli
 ng g interface models/iModel
-
 ```
 
 Replace the code in i-model.ts with
@@ -154,14 +156,12 @@ import { UUID } from 'angular2-uuid';
 export interface IModel {
     id: UUID;
 }
-
 ```
 
 ### create generic table service to proxy rethink db tables
 
 ```cli
 ng g service services/table
-
 ```
 
 Replace the code in table.service.ts with the folowing
