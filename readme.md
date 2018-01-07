@@ -8,8 +8,8 @@ At the time of writing, horizon.io is not online anymore. But the docs can be fo
 An online version can be found [here](http://samuelhughes.com/rethinkdb/horizon-docs/docs/)
 
 You can clone this project, run it as is:
-git clone ....
-cd ....
+git clone https://github.com/BartNetJS/AngularWithRethinkDB
+cd AngularWithRethinkDB
 npm i
 npm run start
 
