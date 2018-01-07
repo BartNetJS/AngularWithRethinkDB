@@ -45,8 +45,6 @@ npm install -g horizon
 
 > hz init will initialize the horizon server. See the .hz map for settings
 
-> if you cloned the project and like run the sampl directly, run `npm i` and `npm run start`
-
 And start the horizon server
 
 ```cli
