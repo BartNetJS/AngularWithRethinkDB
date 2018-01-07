@@ -19,17 +19,21 @@ Install RethinkDB: <https://rethinkdb.com/docs/install/>
 Check the administrative portal: <http://localhost:8080/>
 
 **Check if the path to rethinkdb.exe exist in your environment variables!**
-side note: on windows I had to logout and login again before the path to rethinkdb was added
+> On windows I had to logout and login again before the path to rethinkdb was active
 
 ### Install Horizon
 
-The horizon server is the api where you angular app will talk to
+The horizon server is the api where your angular app will talk to
 
 ```cli
 npm install -g horizon
-hz init // will initialize the horizon settings, see the .hz map
+hz init 
 
 ```
+
+> hz init will initialize the horizon server. See the .hz map for settings
+
+> if you cloned the project and like run the sampl directly, run `npm i` and `npm run start`
 
 And start the horizon server
 
@@ -37,10 +41,10 @@ And start the horizon server
 hz serve --dev
 
 ```
-you should note the following:
+you should see the following:
 
+```note
 __App available at http://127.0.0.1:8181_
-error: rethinkdb stderr: warn: Trying to delete non-existent file 'D:\source\playground\RethinkNGApp\rethinkdb_data\tmp'
 _RethinkDB_
    _├── Admin interface: http://localhost:43534
    _└── Drivers can connect to port 43533__
@@ -48,10 +52,15 @@ _Starting Horizon..._
 _🌄 Horizon ready for connections_
 _
 
+```
 Check the administrative portal: <http://localhost:43534/> (the port can be diferent, see your output)
-Note the "App available at": <http://127.0.0.1:8181>
 
-### Angular CLI
+> Note the "App available at": <http://127.0.0.1:8181>.
+> This is the endpoint your app will talk to
+
+> you can stop the horizon server for now
+
+### Install Angular CLI
 
 ```cli
 npm install -g @angular/cli
@@ -61,9 +70,9 @@ npm install -g @angular/cli
 ## Scafold Angular APP
 
 ```cli
-ng new RethinkNGApp -minimal
+ng new RethinkNGDemoApp -minimal
 
-cd RethinkNGApp
+cd RethinkNGDemoApp
 
 npm i rxjs -s
 
@@ -72,10 +81,15 @@ npm i @horizon/client -s
 npm i angular2-uuid -s
 npm install @angular/material @angular/cdk -s
 npm install @angular/animations -s
+npm install concurrently --save-dev
 
 ```
 
+> If you see an error while `ng new` is scafolding the app (e.g. 'Package install failed, see above.'), then run `yarn install` in the root folder of your app again. If it still fail, try `npm i`
+
 ### add a horizon config section to environment.ts
+
+> open VSCode by entering `code .` (notice the '.', vscode will be opened in the working folder)
 
 ```typescript
 export const environment = {
@@ -87,32 +101,48 @@ export const environment = {
 
 ```
 
-### Add the material design css to styles.css
+### Add angular modules to the import section
+
+```typescript
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+
+imports: [
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule
+  ],
+```
+### Add the material design 
+> This section is optional, but the front end will look nice
+#### css to styles.css
+
 
 ```typescript
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 ```
 
-### Add the material design components to app.module.ts
+#### Add the material design components to app.module.ts
 
 ```typescript
+  import { MatTableModule, MatButtonModule, MatInputModule } from "@angular/material";
+  import { CdkTableModule } from "@angular/cdk/table";
+
   imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
+    ...,
     CdkTableModule,
     MatTableModule,
     MatButtonModule,
-    MatInputModule,
-    BrowserAnimationsModule
+    MatInputModule
   ],
 ```
 
 ### create a IModel interface
 
 ```cli
-ng g interface models/iModel.ts
+ng g interface models/iModel
 
 ```
 
@@ -198,7 +228,6 @@ export class TableService<T extends IModel> {
 
 ```cli
 ng g service services/customer
-
 ```
 
 Replace code with
@@ -214,9 +243,14 @@ export class CustomerService extends TableService<Customer> {
         super(new Customers());
     }
 }
-
 ```
 
+add the CustomerService to the provider section in `app.module.ts`
+
+```
+import {CustomerService} from './services/customer.service';
+providers: [CustomerService]
+```
 ### Generate a customer model (or any table you have in RethinkDB)
 
 ```cli
@@ -258,7 +292,7 @@ export class Customer {
     street: string;
     houseNumber: string;
     city: string;
-    postcode: string;
+    postCode: string;
     country: string;
 
     public constructor(init?: Partial<ICustomer>) {
@@ -278,17 +312,6 @@ export class Customers implements ITableService{
 
 ```cli
 ng g component components/customers
-```
-
-Add an import statement in app.module.ts to use the material components
-
-```typescript
-import { MatTableDataSource } from '@angular/material';
-
-imports: [
-    ...
-  ],
-
 ```
 
 Replace code with
@@ -343,14 +366,12 @@ export class CustomersComponent implements OnInit {
     this.customerService.removeObject(customer.id);
   }
 }
-
 ```
 
 ### Generate a customer component
 
 ```cli
 ng g component components/customer
-
 ```
 Replace the code
 
@@ -389,10 +410,9 @@ export class CustomerComponent implements OnInit {
     this.customerService.addObject(this.customer);
   }
 }
-
 ```
 
-### Update app.component.ts
+### Replace app.component.ts
 
 ```typescript
 import { Component } from "@angular/core";
@@ -408,5 +428,18 @@ import { Component } from "@angular/core";
 export class AppComponent {
   title = "app";
 }
+```
+## Replace `npm run start` script
 
+```typescript
+"scripts": {
+   ...
+   "start": "concurrently \"hz serve --dev\" \"ng serve --open\" ",
+   ... 
+ }
+```
+## Ready to go :-)
+
+```
+npm run start
 ```
